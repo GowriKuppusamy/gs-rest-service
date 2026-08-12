@@ -1,126 +1,153 @@
 # Architecture Document
 
-## Current Architecture
+## Governance
 
-The application in the initial folder is a minimal Spring Boot service built with Java 17 and Maven. The entry point is the Spring Boot application class, which boots the web application and exposes the service through the embedded Spring runtime. At this stage, the project does not yet contain a dedicated controller, service, or data model for the greeting feature, so the architecture is intentionally simple and follows the default Spring Boot structure.
+- Status: Drafted for Architecture phase (SCRUM-3)
+- Approval Status: APPROVED
+- Approver: Human Reviewer
+- Approval Date: 2026-08-11
+- Decisions:
+  - Keep a single Spring Boot application in `initial/` with no new modules.
+  - Preserve package root `com.example.restservice` and add only minimal REST components.
+  - Use controller + service separation so HTTP concerns and greeting logic remain decoupled.
+  - Return JSON with only `message` field for `/greeting`, matching approved requirements.
+  - Keep persistence and external integrations out of scope.
+- Open Issues:
+  - None blocking architecture approval.
+  - Clarification for future stories: explicit behavior for blank/whitespace `name` values is not defined in SCRUM-3 requirements.
 
-The current solution is a single-service application with no persistence layer, no external integrations, and no user interface. Its purpose is to provide a lightweight REST service foundation that can grow to support the requirements of SCRUM-3.
+## Architecture Overview
+
+SCRUM-3 uses a minimal layered Spring MVC architecture inside the existing `initial/` application. The architecture supports one public REST endpoint (`GET /greeting`) that accepts an optional `name` query parameter and returns a JSON payload containing only the greeting message. The solution is intentionally lightweight and preserves existing startup behavior.
+
+## Existing Architecture
+
+Current `initial/` project context:
+
+- Single Spring Boot application (`RestServiceApplication`) using Java 17 and Maven.
+- Web stack provided by Spring Boot Web MVC starter.
+- No database, no external service clients, and no UI.
+- Existing code structure already includes:
+  - Bootstrap class in `com.example.restservice`
+  - `GreetingController` in `com.example.restservice.controller`
+  - `GreetingService` in `com.example.restservice.service`
+  - `GreetingResponse` DTO in `com.example.restservice.controller`
+  - Unit/context tests in `src/test/java`
+
+This is consistent with a minimal monolithic REST service and should be retained.
 
 ## Proposed Architecture
 
-For SCRUM-3, the architecture should remain lightweight and layered while introducing the minimum components needed to support a personalized greeting endpoint.
+The target architecture for SCRUM-3 is a thin-controller pattern with isolated greeting logic:
 
-The proposed design follows a standard Spring MVC style:
+1. Controller handles request mapping and parameter binding.
+2. Service constructs greeting output and default behavior.
+3. DTO serializes response to JSON.
+4. Tests validate startup and greeting behavior for named and default flows.
 
-1. A web controller receives incoming HTTP requests.
-2. A service component handles the greeting logic.
-3. A simple response model represents the greeting payload.
-4. The application remains a single Spring Boot service with no database dependency.
-
-This approach keeps the solution easy to test, easy to understand, and consistent with the existing Spring Boot structure.
+No additional layers (repository, integration clients, async messaging) are introduced because they are unnecessary for this scope.
 
 ## Components
 
-### 1. Application Bootstrap
-- Responsible for starting the Spring Boot application.
-- Initializes the web context and configures the application runtime.
+1. Application Bootstrap
+- Class: `RestServiceApplication`
+- Responsibility: application startup and Spring context initialization.
 
-### 2. REST Controller
-- Handles incoming HTTP requests for the greeting endpoint.
-- Parses the optional name parameter.
-- Returns a greeting response to the client.
+2. Greeting API Controller
+- Class: `GreetingController`
+- Responsibility: expose `GET /greeting`, parse optional `name`, return response object.
 
-### 3. Greeting Service
-- Encapsulates the business logic for creating the message.
-- Applies the default value of World when no name is supplied.
-- Keeps the controller thin and focused on request handling.
+3. Greeting Domain Service
+- Class: `GreetingService`
+- Responsibility: apply greeting rule and defaulting logic.
 
-### 4. Response Model
-- Represents the payload returned by the endpoint.
-- Contains the greeting message in a simple structure suitable for JSON responses.
+4. Response DTO
+- Class: `GreetingResponse`
+- Responsibility: response contract with single field `message`.
 
-### 5. Test Layer
-- Verifies that the application starts correctly and that the greeting behavior is working as expected.
-- Confirms the endpoint behavior for both provided and default values.
+5. Test Layer
+- Classes: `GreetingControllerTest`, `RestServiceApplicationTests`
+- Responsibility: verify business behavior and application context load.
 
 ## Responsibilities
 
-- The controller is responsible for HTTP concerns such as request mapping and response formatting.
-- The service is responsible for business rules and greeting generation.
-- The model is responsible for representing API output.
-- The test layer is responsible for validating behavior without changing production code.
+- Controller: transport concerns (HTTP mapping, query parameter binding, response object creation).
+- Service: business rule concerns (default when `name` is not provided + output format `Hello, {name}!`).
+- DTO: API schema concerns (JSON shape).
+- Spring Boot runtime: dependency injection, request dispatching, JSON serialization.
 
-## Technology Stack
+## Data Flow
 
-- Java 17
-- Spring Boot 4.0.7
-- Spring Web MVC
-- Maven
-- JUnit 5 for testing
+1. Client sends `GET /greeting` with optional `name`.
+2. Spring MVC routes request to `GreetingController.greeting(...)`.
+3. Controller forwards `name` to `GreetingService.greet(...)`.
+4. Service computes effective name (`World` when `name` is not provided) and returns greeting string.
+5. Controller wraps value in `GreetingResponse(message)`.
+6. Spring serializes DTO to JSON and returns HTTP 200.
 
-## REST Endpoint Design
+## Technology Decisions
 
-### Proposed Endpoint
-- Method: GET
-- Path: /greeting
+- Java 17: satisfies NFR-01 and existing build configuration.
+- Maven build: satisfies NFR-02 and project convention.
+- Spring Boot (existing version in `initial/pom.xml`, currently 4.0.7) + Web MVC starter: satisfies NFR-03 and DEP-01.
+- JUnit 5 + Spring Boot test starter: supports FR-08 and context validation.
+- No additional dependencies: satisfies NFR-05.
 
-### Request Parameters
-- name: optional query parameter
+## Integration Points
 
-### Example Requests
-- /greeting
-- /greeting?name=Alice
+- Inbound: HTTP client requests to `/greeting`.
+- Internal: Spring dependency injection between controller and service.
+- Outbound: none (no DB, queue, cache, or external API).
 
-### Example Responses
-- Without name: Hello, World!
-- With name: Hello, Alice!
+## Security Considerations
 
-### Status Codes
-- 200 OK for successful requests
-
-## Request Flow
-
-1. A client sends an HTTP GET request to /greeting.
-2. The controller receives the request and extracts the optional name parameter.
-3. The controller delegates to the greeting service.
-4. The service constructs the greeting message using the provided name or the default value World.
-5. The controller returns the message as a JSON response.
-6. The client receives the greeting payload with an HTTP 200 response.
-
-## Data Model
-
-The feature does not require persistence or a database model. A simple response object is sufficient.
-
-### Greeting Response
-- message: string
-
-This object contains the final greeting text that is returned to the client.
-
-## Package Structure
-
-The proposed package organization is aligned with the current project layout:
-
-- com.example.restservice
-  - RestServiceApplication
-  - controller
-    - GreetingController
-  - service
-    - GreetingService
-  - model
-    - GreetingResponse
-
-This structure keeps the application organized without introducing unnecessary complexity.
+- `name` is treated as untrusted input and used only for string composition (SR-01, SR-04).
+- Endpoint is read-only and stateless; no credential handling is introduced (SR-03).
+- Response contract exposes only message content; no stack traces/internal state intended (SR-02).
+- No persistence or command execution paths, reducing injection risk surface.
 
 ## Risks
 
-- The current project is a minimal scaffold, so the feature must be introduced carefully to avoid over-engineering.
-- The endpoint design could become ambiguous if naming conventions are not kept consistent.
-- The default handling for blank or empty names should be defined clearly to avoid inconsistent behavior.
-- If additional features are introduced later, the simple structure may need to evolve into a more formal layered design.
+- Requirement interpretation risk around blank input behavior (`name=`) if future policy changes.
+- Contract drift risk if additional response fields are added in later refactors.
+- Regression risk if startup wiring changes without corresponding tests.
 
-## Assumptions
+## Constraints
 
-- The goal of SCRUM-3 is limited to implementing a simple personalized greeting endpoint.
-- No database or external service integration is required for this story.
-- The solution should remain compatible with the current Spring Boot application setup.
-- The implementation should remain focused on the greeting feature and avoid unrelated architectural changes.
+- Implement only within `initial/` (CON-01).
+- Preserve package base `com.example.restservice` (CON-02).
+- No DB/external API/UI additions (CON-03).
+- Preserve startup behavior (CON-04, FR-07).
+
+## Alternatives Considered
+
+1. Controller-only implementation (no service class)
+- Rejected: increases coupling of HTTP and business logic; weakens test isolation.
+
+2. Include numeric id in response (reference-style payload)
+- Rejected: conflicts with FR-06 requiring only greeting message.
+
+3. Add repository/persistence abstraction
+- Rejected: unnecessary complexity for stateless greeting story.
+
+## Requirements Traceability
+
+| Requirement | Architectural Coverage |
+|---|---|
+| FR-01 | `GreetingController` exposes `GET /greeting`. |
+| FR-02 | Optional `name` parameter bound in controller method signature. |
+| FR-03 | `GreetingService` formats `Hello, {name}!` for provided name. |
+| FR-04 | `GreetingService` defaults to `World` when `name` is not provided. |
+| FR-05 | Standard successful controller return path yields HTTP 200. |
+| FR-06 | `GreetingResponse` contains only `message` for JSON serialization. |
+| FR-07 | `RestServiceApplication` startup path preserved; no architectural disruption. |
+| FR-08 | `GreetingControllerTest` and context-load test provide unit/startup verification. |
+| NFR-01..03 | Java 17, Maven, Spring Boot retained from existing setup. |
+| NFR-04 | Package structure under `com.example.restservice` maintained. |
+| NFR-05 | No new third-party dependencies required. |
+| NFR-06 | Architecture supports `mvn clean verify` with existing test approach. |
+| SR-01..04 | Input treated as data only; no sensitive data exposure or execution pathways. |
+
+## Approval Status
+
+Approval Status: APPROVED

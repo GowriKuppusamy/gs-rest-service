@@ -1,79 +1,101 @@
 # Implementation Plan
 
+## Governance
+
+- Status: Drafted for Implementation Planning phase (SCRUM-3)
+- Approval Status: APPROVED
+- Approver: Human Reviewer  
+- Approval Date: 2026-08-11
+- Decisions:
+	- Keep scope limited to SCRUM-3 personalized greeting behavior only.
+	- Implement only in the `initial/` Spring Boot project.
+	- Retain controller-service-DTO structure and `message`-only JSON contract.
+	- Add only tests required for named/default greeting behavior and startup safety.
+- Open Issues:
+	- None blocking implementation planning.
+
 ## Objective
 
-Implement Jira story SCRUM-3 by adding a simple personalized greeting endpoint to the Spring Boot application in the initial folder.
+Deliver SCRUM-3 by implementing `GET /greeting` with optional `name`, defaulting to `World`, returning HTTP 200 and JSON with only `message`, while preserving existing startup behavior.
 
-## Scope
+## Scope Guardrails
 
-The work is limited to the greeting feature described in the requirements, architecture, and design review documents. No unrelated application changes are planned.
+- In scope: endpoint behavior, greeting logic, response DTO contract, and unit/context tests.
+- Out of scope: authentication, persistence, external integrations, UI work, dependency upgrades, and unrelated refactoring.
 
-## Implementation Tasks
+## Dependency-Ordered Tasks
 
-### 1. Add REST endpoint
-- Priority: High
-- Effort: Small
-- Dependencies: None
-- Description: Create a controller that exposes a GET endpoint for greeting requests.
-- Notes: The endpoint should support an optional name parameter and return a greeting response.
+### IP-01
+- Description: Implement/update greeting business logic to produce `Hello, {name}!` and default to `World` when `name` is absent.
+- Dependency: None
+- Expected Files: `initial/src/main/java/com/example/restservice/service/GreetingService.java`
+- Test Requirement: Unit-level validation through controller/service tests for default and named cases.
+- Acceptance Criteria: AC-02, AC-03
 
-### 2. Add greeting business logic
-- Priority: High
-- Effort: Small
-- Dependencies: Task 1
-- Description: Implement a service that builds the greeting message using the provided name or the default value World.
-- Notes: Keep the logic isolated from the controller to preserve a clean separation of concerns.
+### IP-02
+- Description: Implement/update REST endpoint at `GET /greeting` with optional `name` parameter and HTTP 200 response using the greeting service.
+- Dependency: IP-01
+- Expected Files: `initial/src/main/java/com/example/restservice/controller/GreetingController.java`
+- Test Requirement: Endpoint behavior verified for status and payload expectations.
+- Acceptance Criteria: AC-01, AC-02, AC-03, AC-05
 
-### 3. Add response model
-- Priority: Medium
-- Effort: Small
-- Dependencies: Task 1
-- Description: Create a simple response object for the greeting payload.
-- Notes: This should be lightweight and suitable for JSON serialization.
+### IP-03
+- Description: Implement/update response DTO so JSON contains only the `message` field.
+- Dependency: IP-02
+- Expected Files: `initial/src/main/java/com/example/restservice/controller/GreetingResponse.java`
+- Test Requirement: Serialization/response assertions in controller tests confirm schema.
+- Acceptance Criteria: AC-04, AC-05
 
-### 4. Add automated tests
-- Priority: High
-- Effort: Small
-- Dependencies: Tasks 1-3
-- Description: Add tests for the default greeting behavior and the personalized greeting behavior.
-- Notes: Tests should verify the acceptance criteria and confirm that the application still starts successfully.
+### IP-04
+- Description: Add/update automated tests for default greeting, named greeting, and application context startup.
+- Dependency: IP-03
+- Expected Files: `initial/src/test/java/com/example/restservice/GreetingControllerTest.java`, `initial/src/test/java/com/example/restservice/RestServiceApplicationTests.java`
+- Test Requirement: Tests must pass locally via Maven test lifecycle.
+- Acceptance Criteria: AC-01, AC-02, AC-03, AC-04, AC-05
 
-### 5. Verify application behavior
-- Priority: Medium
-- Effort: Small
-- Dependencies: Tasks 1-4
-- Description: Run the relevant Maven tests and confirm the feature behaves as expected.
-- Notes: This step validates the implementation against the story requirements.
+## Implementation Order
 
-## Dependencies
+1. IP-01
+2. IP-02
+3. IP-03
+4. IP-04
 
-- The controller depends on the service for greeting generation.
-- The tests depend on the controller, service, and response model being available.
-- Verification depends on the feature implementation being complete.
+## Test Strategy
+
+- Validate endpoint returns HTTP 200 for default and named requests.
+- Validate default behavior when `name` is absent (`Hello, World!`).
+- Validate personalized behavior when `name` is provided (`Hello, {name}!`).
+- Validate response body remains valid JSON with only `message`.
+- Validate application context still starts.
+- Validate the full Maven build and test lifecycle via `mvn clean verify` during the Verification phase.
+
+## Security Considerations
+
+- Treat `name` as untrusted input and use only for plain string formatting.
+- Do not introduce execution, persistence, or templating paths for `name`.
+- Keep response limited to expected greeting payload and avoid internal state leakage.
+
+## Rollback Considerations
+
+- If regression is found, revert only SCRUM-3 touched greeting endpoint/service/DTO/test changes.
+- Confirm rollback restores pre-story startup and test baseline.
+- No data rollback is required because the story is stateless and non-persistent.
 
 ## Blocked Tasks
 
-- No blocked tasks are expected for this small feature.
-- If the endpoint contract is not clarified, task 1 may need confirmation on the exact response shape.
+- None currently blocked.
 
-## Risks
+## Acceptance Criteria Mapping
 
-- Ambiguous behavior for blank or empty names.
-- Slight mismatch between the documented response format and the implemented response format.
-- Over-engineering the solution beyond the scope of SCRUM-3.
+| Acceptance Criterion | Planned Task(s)     |
+| -------------------- | ------------------- |
+| AC-01                | IP-02, IP-04        |
+| AC-02                | IP-01, IP-02, IP-04 |
+| AC-03                | IP-01, IP-02, IP-04 |
+| AC-04                | IP-03, IP-04        |
+| AC-05                | IP-04               |
+| AC-06                | Verification phase  |
 
-## Estimated Effort
+## Approval Status
 
-- Task 1: 1-2 hours
-- Task 2: 1 hour
-- Task 3: 30 minutes
-- Task 4: 1-2 hours
-- Task 5: 30 minutes
-
-## Suggested Order
-
-1. Implement the controller endpoint.
-2. Implement the greeting service.
-3. Add the response model.
-4. Add tests.
-5. Verify behavior.
+Approval Status: APPROVED

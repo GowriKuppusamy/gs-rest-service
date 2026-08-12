@@ -1,26 +1,71 @@
-# Pull Request Prompt
+# Pull Request Phase
 
-## Goal
+Prepare the Pull Request package.
 
-Prepare Pull Request documentation.
+## Required Inputs
 
-## Inputs
+Read:
 
-- All generated documents
-- Git history
-- Jira Story SCRUM-3
+- docs/requirements.md
+- docs/architecture.md
+- docs/design-review.md
+- docs/implementation-plan.md
+- docs/verification.md
+- docs/review-report.md
+- Git diff
+- .github/skills/pr.skill.md
 
-Generate
+All required phase artifacts must be approved.
 
-docs/pr-description.md
+## Output
 
-Include
+Create:
 
-- Summary
-- Changes
-- Testing
-- Risks
-- Rollback Plan
-- Related Jira Story
+`docs/pr-description.md`
 
-Do not create the PR until user approval.
+The PR description must contain:
+
+## Summary
+
+2–3 sentences explaining what was built and why.
+
+## Changes Made
+
+List every significant file/component changed and why.
+
+## Test Evidence
+
+Include:
+
+- build result
+- test result
+- relevant CI evidence
+
+## Known Limitations
+
+Include anything:
+
+- Not Found
+- deferred
+- out of scope
+- dependent on external systems
+
+## Reviewer Checklist
+
+Include:
+
+- [ ] Requirements reviewed
+- [ ] Architecture reviewed
+- [ ] Design review completed
+- [ ] Implementation plan approved
+- [ ] Tests passing
+- [ ] Verification completed
+- [ ] Code review completed
+- [ ] Security reviewed
+- [ ] Known limitations accepted
+
+## Restrictions
+
+Do not create or merge the Pull Request unless explicitly requested by the human.
+
+Do not modify application code.

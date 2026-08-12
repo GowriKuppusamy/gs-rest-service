@@ -1,30 +1,46 @@
-# Implementation Prompt
+# Implementation Phase
 
-## Goal
+Implement only the approved implementation plan.
 
-Implement SCRUM-3.
+## Required Inputs
 
-## Inputs
+Read:
 
-- implementation-plan.md
-- implementation.skill.md
+- docs/requirements.md
+- docs/architecture.md
+- docs/design-review.md
+- docs/implementation-plan.md
+- .github/skills/implementation.skill.md
 
-## Instructions
+All required artifacts must be approved.
 
-Implement only the approved functionality.
+## Tasks
 
-Update
+1. Inspect the existing implementation.
+2. Follow the approved implementation plan.
+3. Make minimal focused changes.
+4. Preserve existing functionality.
+5. Add or update automated tests.
+6. Follow existing project conventions.
+7. Avoid unrelated refactoring.
+8. Report deviations from the approved plan.
 
-- Java classes
-- Tests
-- Documentation if required
+## Output
 
-Do not modify unrelated files.
+Modify only the source and test files required by the plan.
 
-After implementation
+Provide a summary containing:
 
-Run
+- Implemented tasks
+- Files changed
+- Tests added/updated
+- Deviations
+- Remaining work
 
-mvn clean test
+Do not create `docs/verification.md`.
 
-Wait for approval before committing.
+Final verification is owned by the Verification phase.
+
+## Approval
+
+Do not start implementation if the implementation plan is not approved.

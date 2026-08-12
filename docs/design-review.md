@@ -1,70 +1,72 @@
-# Design Review
+# Design Review Document
 
-## Summary
+## Governance
 
-The proposed design for SCRUM-3 is appropriate for the current scope. It is simple, lightweight, and well matched to the existing Spring Boot starter project in the initial folder. The architecture keeps the implementation focused on a single greeting endpoint and avoids unnecessary complexity.
+- Status: Completed for Design Review phase (SCRUM-3)
+- Approval Status: APPROVED
+- Approver: Human Reviewer
+- Approval Date: 2026-08-11
+- Decisions:
+  - Architecture is acceptable to proceed with implementation after human approval.
+  - Controller-service-DTO split is retained as the target design pattern.
+  - No additional infrastructure layers are required for SCRUM-3 scope.
+- Open Issues:
+  - None within approved SCRUM-3 requirements and architecture scope.
 
-## Architecture Review
+## Review Scope
 
-The proposed layered structure is reasonable for a small REST service:
+Design review of approved SCRUM-3 architecture against approved requirements for: coverage, consistency, security posture, observability expectations, testability, and operational risk.
 
-- A controller handles HTTP concerns.
-- A service contains the greeting business logic.
-- A response model represents the output payload.
-- A test layer validates behavior.
+## Requirements Traceability
 
-This separation is maintainable for a minimal service and is consistent with Spring Boot conventions. The design should be easy for a small team to implement and understand.
+| Requirement Set | Review Result | Notes |
+|---|---|---|
+| FR-01 to FR-06 | Covered | Endpoint, optional query parameter, greeting format, HTTP 200, JSON with only `message`. |
+| FR-07 | Covered | Startup behavior preserved by minimal-change architecture in `initial/`. |
+| FR-08 | Covered | Architecture includes tests aligned with required named/default scenarios. |
+| NFR-01 to NFR-05 | Covered | Java 17, Maven, existing Spring Boot stack, package conventions, no new dependencies. |
+| NFR-06 | Covered with verification dependency | Design supports `mvn clean verify`; final confirmation remains in Verification phase. |
+| SR-01 to SR-04 | Covered | Input treated as data-only reflection; no persistence or execution path introduced. |
 
-## Maintainability
+## Findings
 
-The design is maintainable because it is intentionally simple and modular. The responsibilities are clearly separated between controller, service, and model. This makes the code easier to extend later if more endpoints or business rules are introduced.
+### DR-001
+- Severity: LOW
+- Area: Observability and Operations
+- Evidence: No explicit logging/metrics statement for the new endpoint.
+- Impact: Troubleshooting may rely only on generic framework logs.
+- Recommendation: Confirm reliance on existing Spring Boot default logging for this story and defer custom metrics unless requested by future requirements.
+- Decision: ACCEPTED RISK
 
-However, the design should remain disciplined to avoid turning a small feature into an over-engineered solution. A simple service class and response model are sufficient for this story.
-
-## Scalability
-
-The proposed design is scalable enough for the current requirement because it is stateless and does not depend on persistence or external services. A single Spring Boot instance can handle the greeting endpoint efficiently.
-
-Scalability concerns are minimal for this story. If the service grows later, the architecture can be extended with additional layers, validation, or service abstractions without major rework.
+### DR-002
+- Severity: INFORMATIONAL
+- Area: Maintainability
+- Evidence: Architecture keeps clear responsibility boundaries (controller, service, DTO) and avoids unnecessary layers.
+- Impact: Positive impact on extensibility and test isolation.
+- Recommendation: Keep implementation aligned to this boundary; avoid introducing extra abstractions for SCRUM-3.
+- Decision: ACCEPT
 
 ## Risks
 
-1. Ambiguous default behavior
-   - The design should clearly define how blank or empty names are handled.
-   - This is important to avoid inconsistent behavior between requests.
+- Contract drift risk if response shape expands beyond `message` without requirement change.
 
-2. Over-implementation risk
-   - Because the project is a minimal scaffold, there is a risk of adding unnecessary structure beyond the current requirement.
-   - The solution should stay focused on the greeting feature.
+## Gaps
 
-3. Incomplete API contract definition
-   - The endpoint shape and response format should be documented clearly to avoid confusion during implementation and testing.
+- Verification evidence for NFR-06 (`mvn clean verify`) remains pending until the Verification phase.
 
-4. Limited validation coverage
-   - The design should include test cases for both the provided-name and default-name scenarios.
-   - This helps ensure the acceptance criteria are fully covered.
+## Recommended Changes
 
-## Missing Requirements or Gaps
+1. Keep implementation aligned with the controller-service-DTO boundary and `message`-only response contract.
+2. Ensure Verification captures `mvn clean verify` evidence and required named/default endpoint test results.
 
-The current requirements and architecture are generally complete for the requested feature, but a few details would strengthen implementation quality:
+## Accepted Risks
 
-- Define the exact response format, such as whether the output should be a plain string or a JSON object.
-- Clarify the behavior for blank, null, or whitespace-only name input.
-- Specify whether the endpoint should be exposed at /greeting or another URI.
-- Document the expected greeting format precisely, for example "Hello, World!" versus "Hello World".
+- For SCRUM-3, absence of custom endpoint metrics is acceptable if default application logs remain available.
 
-## Security Considerations
+## Final Recommendation
 
-The feature is low risk from a security perspective because it does not involve authentication, persistence, or sensitive data. Still, the implementation should avoid exposing unnecessary error details and should validate input safely.
+Conditionally approved from a design-quality standpoint, pending human approval.
 
-## Improvement Recommendations
+## Approval Status
 
-1. Keep the architecture as simple as possible.
-2. Use a thin controller and a dedicated service class.
-3. Add unit and integration tests for happy-path and default-path behavior.
-4. Define input handling rules for empty or blank names.
-5. Keep the API response format consistent and documented.
-
-## Conclusion
-
-The proposed design is fit for purpose for SCRUM-3. It is simple, maintainable, and aligned with the requirements. The main improvements are around clarifying the endpoint contract and handling edge cases in a consistent way.
+Approval Status: APPROVED

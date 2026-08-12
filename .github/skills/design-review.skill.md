@@ -1,11 +1,52 @@
-Review architecture.md.
+---
+name: design-review
+description: Perform structured senior-level review of proposed architecture.
+---
 
-Identify:
+# Design Review Skill
 
-- Risks
-- Missing requirements
-- Scalability
-- Security
-- Maintainability
+## Review Principles
 
-Generate design-review.md.
+Review the architecture against approved requirements.
+
+Evaluate:
+
+- completeness
+- correctness
+- consistency
+- security
+- scalability
+- maintainability
+- testability
+- observability
+- error handling
+- rollback
+- operational readiness
+
+## Findings
+
+Every finding must include:
+
+- ID
+- Severity
+- Area
+- Evidence
+- Impact
+- Recommendation
+- Decision
+
+## Severity
+
+BLOCKER
+HIGH
+MEDIUM
+LOW
+INFORMATIONAL
+
+## Boundary
+
+Design review evaluates architecture.
+
+Code review evaluates implementation.
+
+Do not modify application source code.

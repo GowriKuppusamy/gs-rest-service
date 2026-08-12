@@ -1,24 +1,61 @@
-# Requirements Generation Prompt
+# Requirements Phase
 
-## Goal
-Generate the Business Requirements Document for Jira story SCRUM-3.
+Execute the Requirements phase of the Agentic SDLC.
 
 ## Inputs
-- Jira Story: SCRUM-3
-- Source Code: initial/
-- Skill: requirements.skill.md
 
-## Instructions
+Use the configured Jira/Confluence MCP to retrieve the User Story.
 
-1. Read Jira story SCRUM-3 using the configured Jira MCP server.
-2. Analyze the existing Spring Boot application in the initial folder.
-3. Understand the current functionality.
-4. Identify the business objective.
-5. Generate a Business Requirements Document.
-6. Save the document as:
+Also inspect:
 
-docs/requirements.md
+- existing repository structure
+- existing application behavior
+- relevant configuration
+- existing tests
 
-Do not modify application code.
+Use:
 
-Wait for user approval before continuing.
+`.github/skills/requirements.skill.md`
+
+## Tasks
+
+1. Retrieve and understand the User Story.
+2. Identify missing or ambiguous information.
+3. Ask the human clarification questions when required.
+4. Do not assume missing business requirements.
+5. Define functional requirements.
+6. Define non-functional requirements.
+7. Define security requirements.
+8. Define acceptance criteria.
+9. Define constraints and dependencies.
+
+## Output
+
+Create:
+
+`docs/requirements.md`
+
+The document must contain:
+
+- User Story
+- Business Objective
+- Scope
+- Functional Requirements
+- Non-Functional Requirements
+- Security Requirements
+- Acceptance Criteria
+- Dependencies
+- Constraints
+- Assumptions
+- Open Questions
+- Approval Status
+
+Set:
+
+`Approval Status: PENDING`
+
+## Restrictions
+
+Do not modify application source code.
+
+Wait for explicit human approval before Architecture begins.

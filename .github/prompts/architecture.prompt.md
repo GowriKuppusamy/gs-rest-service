@@ -1,32 +1,62 @@
-# Architecture Analysis Prompt
+# Architecture Phase
 
-## Goal
-Generate the Architecture Document for SCRUM-3.
+Execute the Architecture phase.
 
-## Inputs
+## Required Inputs
+
+Read:
 
 - docs/requirements.md
-- initial/
-- architecture.skill.md
+- .github/skills/architecture.skill.md
 
-## Instructions
+`docs/requirements.md` must have:
 
-1. Read requirements.md.
-2. Analyze the Spring Boot project.
-3. Identify:
-   - Components
-   - Packages
-   - REST Controllers
-   - Services
-   - Models
-   - Dependencies
-   - Build configuration
-4. Document the current architecture.
+`Approval Status: APPROVED`
 
-Save as
+If it is not approved, stop and report the missing approval.
 
-docs/architecture.md
+## Tasks
 
-Do not change application code.
+1. Analyze the approved requirements.
+2. Inspect the existing application architecture.
+3. Propose the target architecture.
+4. Identify components and responsibilities.
+5. Define data flow.
+6. Identify technology choices.
+7. Identify integration points.
+8. Identify security boundaries.
+9. Identify risks and constraints.
+10. Ensure the proposal preserves existing functionality.
 
-Wait for approval.
+## Output
+
+Create:
+
+`docs/architecture.md`
+
+Include:
+
+- Architecture Overview
+- Existing Architecture
+- Proposed Architecture
+- Components
+- Responsibilities
+- Data Flow
+- Technology Decisions
+- Integration Points
+- Security Considerations
+- Risks
+- Constraints
+- Alternatives Considered
+- Requirements Traceability
+- Approval Status
+
+Set:
+
+`Approval Status: PENDING`
+
+## Restrictions
+
+Do not modify application source code.
+
+Wait for human approval before Design Review.
