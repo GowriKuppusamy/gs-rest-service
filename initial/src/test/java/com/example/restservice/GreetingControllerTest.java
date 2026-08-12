@@ -1,21 +1,34 @@
 package com.example.restservice;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import com.example.restservice.controller.GreetingController;
 import com.example.restservice.service.GreetingService;
 
 class GreetingControllerTest {
 
-  private final GreetingService greetingService = new GreetingService();
+  private final MockMvc mockMvc = MockMvcBuilders
+      .standaloneSetup(new GreetingController(new GreetingService()))
+      .build();
 
   @Test
-  void returnsDefaultGreetingWhenNameIsNotProvided() {
-    assertThat(greetingService.greet(null)).isEqualTo("Hello, World!");
+  void returnsDefaultGreetingWhenNameIsNotProvided() throws Exception {
+    mockMvc.perform(get("/greeting"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("Hello, World!"))
+        .andExpect(jsonPath("$.id").doesNotExist());
   }
 
   @Test
-  void returnsPersonalizedGreetingWhenNameIsProvided() {
-    assertThat(greetingService.greet("Alice")).isEqualTo("Hello, Alice!");
+  void returnsPersonalizedGreetingWhenNameIsProvided() throws Exception {
+    mockMvc.perform(get("/greeting").param("name", "Alice"))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("Hello, Alice!"))
+        .andExpect(jsonPath("$.id").doesNotExist());
   }
 }
