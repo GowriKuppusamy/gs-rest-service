@@ -1,0 +1,48 @@
+---
+description: Agentic SDLC governance — phase order, gates, and traceability
+alwaysApply: true
+---
+
+# Agentic SDLC Governance
+
+Follow this workflow in order. Do not skip, merge, or reorder phases:
+
+**Requirements → Architecture → Design Review → Implementation Planning → Implementation → Code Review → Verification → Pull Request**
+
+Phase-specific instructions live in Skills and phase rules. This rule governs transitions and cross-cutting constraints only.
+
+## Phase Gates
+
+- **Human approval is required** before leaving any phase.
+- Do not self-approve, assume approval, or advance because a phase "looks done."
+- Each phase must produce its documented artifact before requesting approval.
+- Record current phase, status, blockers, and approval state.
+
+| Phase | Prerequisite artifact |
+|-------|----------------------|
+| Architecture | `docs/requirements.md` (approved) |
+| Design Review | `docs/architecture.md` (approved) |
+| Implementation Planning | Design review sign-off (approved) |
+| Implementation | `docs/implementation-plan.md` (approved) |
+| Code Review | Implementation complete |
+| Verification | Code review sign-off (approved) |
+| Pull Request | Verification evidence (approved) |
+
+## Before Implementation
+
+- Read and align with all approved prerequisite documents for the current work item.
+- Before modifying code, review existing documentation and relevant codebase context.
+- Scope changes to what prior phases approved; do not expand scope silently.
+
+## During Implementation and Review
+
+- **Preserve existing functionality** unless a prior phase explicitly authorized a breaking change.
+- **Add tests** for new functionality; do not remove or weaken tests without documented justification.
+- **Protect secrets** — never commit, log, or expose credentials, tokens, keys, or `.env` contents.
+- **Verify before claiming** — only report test, command, build, or integration results you actually ran in this session. State what was not verified.
+
+## Traceability
+
+- Link decisions and changes back to requirements, architecture, and the implementation plan.
+- Reference Jira story/issue IDs and acceptance criteria when available.
+- Keep phase artifacts consistent; update downstream docs when upstream decisions change.
