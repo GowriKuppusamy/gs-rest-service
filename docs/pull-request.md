@@ -96,14 +96,15 @@ Independent verification re-ran the full Maven test suite from `initial/` on Win
 - Manual HTTP request against a running server on port 8080 was not verified (covered by `@SpringBootTest` + `RestTestClient` integration tests)
 
 ## Reviewer Checklist
-- [ ] Requirements approved and satisfied
-- [ ] Architecture and design review approved
-- [ ] Implementation plan completed
-- [ ] Code review approved
-- [ ] Verification evidence reviewed
-- [ ] Tests passed
-- [ ] No known security issues
-- [ ] Known limitations reviewed
+- [x] Requirements approved and satisfied
+- [x] Architecture and design review approved
+- [x] Implementation plan completed
+- [x] Code review approved
+- [x] Verification evidence reviewed
+- [x] Tests passed
+- [x] No known security issues
+- [x] Known limitations reviewed
+
 ```
 ## Pull Request Status
 

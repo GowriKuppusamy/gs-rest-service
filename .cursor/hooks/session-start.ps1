@@ -25,4 +25,15 @@ else {
     Write-Host "WARNING: Skills directory not found."
 }
 
+if (-not (Test-Path "jira-mcp/.env")) {
+    Write-Host "WARNING: jira-mcp/.env missing — Jira MCP will fail until configured."
+}
+
+if (-not (Test-Path ".cursor/mcp.env")) {
+    Write-Host "WARNING: .cursor/mcp.env missing — GitHub MCP will fail until configured."
+}
+elseif (-not $env:GITHUB_TOKEN) {
+    Write-Host "WARNING: GITHUB_TOKEN not in Cursor process env. Run: powershell -ExecutionPolicy Bypass -File .cursor/setup-mcp-env.ps1 then restart Cursor."
+}
+
 Write-Host "Cursor Agentic SDLC validation completed."
