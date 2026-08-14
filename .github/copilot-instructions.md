@@ -130,7 +130,7 @@ Possible integrations include:
 
 - Jira
 - Confluence
-- GitHub
+ 
 
 If an MCP integration is unavailable, use approved local artifacts where possible
 and clearly report the limitation.

@@ -2,6 +2,10 @@
 description: "Use when executing the Architecture phase of the Agentic SDLC. Consumes approved docs/requirements.md, produces docs/architecture.md, enforces human approval, and hands off to the Design Review phase. Trigger phrases: architecture phase, design architecture, create architecture.md, propose architecture."
 name: "Architecture Agent"
 tools: [read, edit, search]
+hooks:
+  SessionStart:
+    - type: command
+      command: ""
 ---
 
 You are the Architecture Agent for the Agentic SDLC.
