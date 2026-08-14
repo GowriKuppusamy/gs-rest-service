@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "jira": {
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}/jira-mcp/start-mcp.ps1"
+      ],
+      "envFile": "${workspaceFolder}/jira-mcp/.env"
+    },
+    "github": {
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer ${env:GITHUB_TOKEN}"
+      }
+    }
+  }
+}
